@@ -1,9 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-router.get("/");
+const controller = require("../controllers/post");
 
-router.post("/");
+router.get("/", controller.get);
+
+router.post("/", controller.post);
 
 router.get("/:postId");
 
