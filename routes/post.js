@@ -7,10 +7,12 @@ router.get("/", controller.get);
 
 router.post("/", controller.post);
 
-router.get("/:postId");
+router.get("/:id", controller.get_post);
 
-router.delete("/:postId");
+router.delete("/:id", controller.delete_post);
 
-router.get("/:postId/comments/");
+router.get("/:id/comments/", controller.get_comments);
+
+router.post("/:id/comments/", controller.post_comment);
 
 module.exports = router;
