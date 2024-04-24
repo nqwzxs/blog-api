@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-router.get("/");
+const controller = require("../controllers/comment");
 
-router.post("/");
+router.get("/", controller.get);
 
-router.get("/:commentId");
+router.get("/:id", controller.get_comment);
 
-router.delete("/:commentId");
+router.delete("/:id", controller.delete_comment);
 
 module.exports = router;
