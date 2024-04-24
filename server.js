@@ -20,4 +20,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/posts", postRouter);
 app.use("/comments", commentController);
 
+app.use(function (err, req, res, next) {
+  res.status(err.status || 500).end();
+});
+
+app.use(function (req, res, next) {
+  res.status(404).end();
+});
+
 app.listen(3000, () => console.log("server started"));
