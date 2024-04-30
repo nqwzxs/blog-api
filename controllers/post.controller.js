@@ -1,11 +1,11 @@
 const { body, param, validationResult } = require("express-validator");
 
-const Post = require("../models/post");
-const Comment = require("../models/comment");
+const Post = require("../models/post.model");
+const Comment = require("../models/comment.model");
 
 exports.get = async function (req, res, next) {
   try {
-    const allPosts = await Post.find({}, "title author date_created")
+    const allPosts = await Post.find()
       .sort({
         date_created: -1,
       })
@@ -20,7 +20,6 @@ exports.get = async function (req, res, next) {
 exports.post = [
   body("title").trim().notEmpty().escape(),
   body("body").trim().notEmpty().escape(),
-  body("hidden").notEmpty().isBoolean().escape(),
   async function (req, res, next) {
     try {
       const errors = validationResult(req);
@@ -34,7 +33,6 @@ exports.post = [
       const post = new Post({
         title: req.body.title,
         body: req.body.body,
-        hidden: req.body.hidden,
       });
 
       await post.save();
@@ -46,7 +44,7 @@ exports.post = [
 ];
 
 exports.get_post = [
-  param("id").notEmpty().isMongoId(),
+  param("id").isMongoId(),
   async function (req, res, next) {
     try {
       const errors = validationResult(req);
@@ -65,6 +63,39 @@ exports.get_post = [
         return next(err);
       }
 
+      if (post.hidden) {
+        const err = new Error();
+        err.status = 403;
+        return next(err);
+      }
+
+      res.json(post);
+    } catch (err) {
+      return next(err);
+    }
+  },
+];
+
+exports.edit_post = [
+  param("id").isMongoId(),
+  body("title").trim().notEmpty().escape(),
+  body("body").trim().notEmpty().escape(),
+  async function (req, res, next) {
+    try {
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        const err = new Error();
+        err.status = 400;
+        return next(err);
+      }
+
+      const post = await Post.findById(req.params.id).exec();
+
+      post.title = req.body.title;
+      post.body = req.body.body;
+
+      await post.save();
       res.json(post);
     } catch (err) {
       return next(err);
@@ -99,7 +130,7 @@ exports.post_comment = [
 ];
 
 exports.get_comments = [
-  param("id").notEmpty().isMongoId(),
+  param("id").isMongoId(),
   async function (req, res, next) {
     try {
       const errors = validationResult(req);
