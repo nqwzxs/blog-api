@@ -1,31 +1,9 @@
 require("dotenv").config();
 
-const express = require("express");
-const mongoose = require("mongoose");
+const express = require("./config/express");
+const mongoose = require("./config/mongoose");
+const passport = require("./config/passport");
 
-const postRouter = require("./routes/post");
-const commentController = require("./routes/comment");
-
-const app = express();
-
-const mongodb = process.env.MONGODB_URI;
-main().catch((err) => console.log(err));
-async function main() {
-  await mongoose.connect(mongodb);
-}
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
-app.use("/posts", postRouter);
-app.use("/comments", commentController);
-
-app.use(function (err, req, res, next) {
-  res.status(err.status || 500).end();
-});
-
-app.use(function (req, res, next) {
-  res.status(404).end();
-});
-
-app.listen(3000, () => console.log("server started"));
+express();
+mongoose();
+passport();
