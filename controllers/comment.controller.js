@@ -1,6 +1,6 @@
 const { param, validationResult } = require("express-validator");
 
-const Comment = require("../models/comment");
+const Comment = require("../models/comment.model");
 
 exports.get = async function (req, res, next) {
   try {
