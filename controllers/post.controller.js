@@ -18,8 +18,8 @@ exports.get = async function (req, res, next) {
 };
 
 exports.post = [
-  body("title").trim().notEmpty().escape(),
-  body("body").trim().notEmpty().escape(),
+  body("title").trim().notEmpty(),
+  body("body").trim().notEmpty(),
   async function (req, res, next) {
     try {
       const errors = validationResult(req);
@@ -78,8 +78,8 @@ exports.get_post = [
 
 exports.edit_post = [
   param("id").isMongoId(),
-  body("title").trim().notEmpty().escape(),
-  body("body").trim().notEmpty().escape(),
+  body("title").trim().notEmpty(),
+  body("body").trim().notEmpty(),
   async function (req, res, next) {
     try {
       const errors = validationResult(req);
@@ -105,7 +105,7 @@ exports.edit_post = [
 
 exports.post_comment = [
   body("author").trim().notEmpty().escape(),
-  body("body").trim().notEmpty().escape(),
+  body("body").trim().notEmpty(),
   async function (req, res, next) {
     const errors = validationResult(req);
 
@@ -151,7 +151,11 @@ exports.get_comments = [
 
       const allPostComments = await Comment.find({
         post: post,
-      }).exec();
+      })
+        .sort({
+          date_created: -1,
+        })
+        .exec();
 
       res.json(allPostComments);
     } catch (err) {
